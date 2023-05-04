@@ -17,12 +17,9 @@ services:
       MINIO_ROOT_USER: masoud
       MINIO_ROOT_PASSWORD: Strong#Pass#2022
     command: server --console-address ":9001" /data
-  unpub:
-    container_name: unpub
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: unpub:local
+  unpubdev:
+    container_name: unpudev
+    image: printeastwoodcz/upubdev
     restart: always
     volumes:
       - .:/app
@@ -30,8 +27,10 @@ services:
       - 4000:4000
     links:
       - mongodb
+      - minio
     depends_on:
       - mongodb
+      - minio
     environment:
       DB_URL: mongodb://mongodb:27017/pub
       WAIT_HOSTS: mongodb:27017, minio:9000
