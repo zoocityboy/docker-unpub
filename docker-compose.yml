@@ -2,22 +2,39 @@ version: "3.7"
 
 services:
   mongodb:
-    image: mongo
+    image: mongo:5.0.17
     ports:
       - "27017:27017"
     restart: always
   unpub:
     container_name: unpub
-    image: trevorwang/unpub 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: unpub:local
     restart: always
     volumes:
       - .:/app
     ports:
       - 4000:4000
     links:
-        - mongodb
+      - mongodb
     depends_on:
-        - mongodb
+      - mongodb
     environment:
       DB_URL: mongodb://mongodb:27017/pub
       WAIT_HOSTS: mongodb:27017
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: masoud
+      MINIO_ROOT_PASSWORD: Strong#Pass#2022
+      WAIT_HOSTS: minio:9001
+    command: server --console-address ":9001" /data
+volumes:
+  minio_storage: {}
