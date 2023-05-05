@@ -19,7 +19,7 @@ services:
     command: server --console-address ":9001" /data
   unpubdev:
     container_name: unpudev
-    image: printeastwoodcz/upubdev
+    image: printeastwoodcz/unpubdev
     restart: always
     volumes:
       - .:/app
