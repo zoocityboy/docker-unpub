@@ -40,12 +40,13 @@ services:
 
   mongodb:
     container_name: unpubdev_mongodb
-    image: mongo:5.0.17
+    image: mongo:4.2.19
     ports:
       - "27017:27017"
-    restart: unless-stopped
+    restart: always
     volumes:
-      - mongo_storage:/data/db
+      - ~/.unpub_mongo:/data/db
+    #   - mongo_storage:/data/db
     # environment:
     #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
     #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -54,7 +55,7 @@ services:
     image: printeastwoodcz/unpubdev
     restart: always
     volumes:
-      - unpudev_storage:/data
+      - ~/.unpubdev-packages:/app/unpubdev-packages
     ports:
       - 4000:4000
     links:
