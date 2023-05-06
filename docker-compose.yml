@@ -26,10 +26,10 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
-      /usr/bin/mc mb myminio/${MINIO_PUBLIC_BUCKET};
-      /usr/bin/mc anonymous set public myminio/${MINIO_PUBLIC_BUCKET};
+      /usr/bin/mc mb myminio/${MINIO_BUCKET_NAME};
+      /usr/bin/mc anonymous set public myminio/${MINIO_BUCKET_NAME};
       echo 'my content' > myfile.txt;
-      /usr/bin/mc cp myfile.txt myminio/${MINIO_PUBLIC_BUCKET};
+      /usr/bin/mc cp myfile.txt myminio/${MINIO_BUCKET_NAME};
       exit 0;
       "
     healthcheck:
@@ -43,18 +43,16 @@ services:
     image: mongo:5.0.17
     ports:
       - "27017:27017"
-    restart: always
+    restart: unless-stopped
+    volumes:
+      - mongo_storage:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
   unpubdev:
     container_name: unpudev
-    image: printeastwoodcz/unpubdev:1.0.2
+    image: printeastwoodcz/unpubdev
     restart: always
-    # entrypoint: >
-    #   /bin/sh -c "
-    #   echo "Welcome to Unpub at ${DB_URL}"
-    #   unpubdev -d ${DB_URL}
-    #   "
-    volumes:
-      - ./:/app
     ports:
       - 4000:4000
     links:
@@ -64,10 +62,11 @@ services:
       - mongodb
       - minio
     environment:
-      DB_URL: mongodb://mongodb:27017/pub
+      DB_URL: mongodb://mongodb:27017/unpubdev
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       WAIT_HOSTS: mongodb:27017, minio:9000
 
 volumes:
   minio_storage: {}
+  mongo_storage: {}
