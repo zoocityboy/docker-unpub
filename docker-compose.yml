@@ -57,7 +57,7 @@ services:
     volumes:
       - ~/.unpubdev-packages:/app/unpubdev-packages
     ports:
-      - 4000:4000
+      - 14000:4000
     links:
       - mongodb
     depends_on:
