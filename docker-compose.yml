@@ -63,8 +63,8 @@ services:
       - minio
     environment:
       DB_URL: mongodb://mongodb:27017/unpubdev
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      # MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      # MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       WAIT_HOSTS: mongodb:27017, minio:9000
 
 volumes:
