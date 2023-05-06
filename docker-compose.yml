@@ -1,28 +1,60 @@
 version: "3.7"
 
 services:
-  mongodb:
-    image: mongo:5.0.17
-    ports:
-      - "27017:27017"
-    restart: always
   minio:
+    container_name: unpubdev_minio
     image: minio/minio
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
       - minio_storage:/data
-    environment:
-      MINIO_ROOT_USER: masoud
-      MINIO_ROOT_PASSWORD: Strong#Pass#2022
     command: server --console-address ":9001" /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  createbuckets:
+    container_name: unpubdev_minio_mc
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb myminio/${MINIO_PUBLIC_BUCKET};
+      /usr/bin/mc anonymous set public myminio/${MINIO_PUBLIC_BUCKET};
+      echo 'my content' > myfile.txt;
+      /usr/bin/mc cp myfile.txt myminio/${MINIO_PUBLIC_BUCKET};
+      exit 0;
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  mongodb:
+    container_name: unpubdev_mongodb
+    image: mongo:5.0.17
+    ports:
+      - "27017:27017"
+    restart: always
   unpubdev:
     container_name: unpudev
-    image: printeastwoodcz/unpubdev
+    image: printeastwoodcz/unpubdev:1.0.2
     restart: always
+    # entrypoint: >
+    #   /bin/sh -c "
+    #   echo "Welcome to Unpub at ${DB_URL}"
+    #   unpubdev -d ${DB_URL}
+    #   "
     volumes:
-      - .:/app
+      - ./:/app
     ports:
       - 4000:4000
     links:
@@ -33,6 +65,8 @@ services:
       - minio
     environment:
       DB_URL: mongodb://mongodb:27017/pub
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       WAIT_HOSTS: mongodb:27017, minio:9000
 
 volumes:
