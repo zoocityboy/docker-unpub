@@ -52,7 +52,7 @@ services:
     #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
   unpubdev:
     container_name: unpudev
-    image: printeastwoodcz/unpubdev:1.0.5-dev.2
+    image: printeastwoodcz/unpubdev:1.0.5-dev.3
     restart: always
     volumes:
       - ~/.unpubdev-packages:/app/unpubdev-packages
