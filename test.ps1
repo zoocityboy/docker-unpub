@@ -7,3 +7,5 @@ Get-Content .env | foreach {
 }
 
  Get-ChildItem -Path Env:\
+
+ unpubdev

@@ -3,7 +3,7 @@ version: "3.7"
 services:
   unpubdev:
     container_name: unpudev
-    image: printeastwoodcz/unpubdev
+    image: printeastwoodcz/unpubdev:1.0.9-dev.0
     restart: always
     volumes:
       - unpubdev_storage:/app/${UNPUBDEV_FOLDER}
