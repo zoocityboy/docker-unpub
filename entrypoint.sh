@@ -1,4 +1,9 @@
 #!/bin/sh
 set -e
-echo "Welcome to Unpub at ${DB_URL}"
-unpubdev -d "${DB_URL}"
+echo "Welcome to Unpub"
+echo "==========================================="
+env | sort
+echo "==========================================="
+
+echo "Starting Unpubdev"
+unpubdev
