@@ -9,14 +9,9 @@ services:
       - unpubdev_storage:/app/${UNPUBDEV_FOLDER}
     ports:
       - 14000:4000
-    links:
-      - mongodb
-    depends_on:
-      - mongodb
     environment:
       DB_URL: ${UNPUBDEV_MONGO_STRING}
       UNPUBDEV_FOLDER: ${UNPUBDEV_FOLDER}
-      WAIT_HOSTS: mongodb:27017
 
 volumes:
   unpubdev_storage: {}
