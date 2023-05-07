@@ -22,7 +22,7 @@ services:
     image: printeastwoodcz/unpubdev:1.0.5-dev.3
     restart: always
     volumes:
-      - unpubdev_storage:/app/unpubdev-packages
+      - unpubdev_storage:/app/${UNPUBDEV_FOLDER}
     ports:
       - 14000:4000
     links:
@@ -31,6 +31,7 @@ services:
       - mongodb
     environment:
       DB_URL: mongodb://${MONGO_UNPUBDEV_USERNAME}:${MONGO_UNPUBDEV_PASSWORD}@mongodb:27017
+      UNPUBDEV_FOLDER: ${UNPUBDEV_FOLDER}
       WAIT_HOSTS: mongodb:27017
 
 volumes:
