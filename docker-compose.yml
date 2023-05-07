@@ -1,61 +1,28 @@
 version: "3.7"
 
 services:
-  # minio:
-  #   container_name: unpubdev_minio
-  #   image: minio/minio
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001"
-  #   volumes:
-  #     - minio_storage:/data
-  #   command: server --console-address ":9001" /data
-  #   environment:
-  #     MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-  #     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
-  #     interval: 30s
-  #     timeout: 20s
-  #     retries: 3
-  # createbuckets:
-  #   container_name: unpubdev_minio_mc
-  #   image: minio/mc
-  #   depends_on:
-  #     - minio
-  #   entrypoint: >
-  #     /bin/sh -c "
-  #     /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
-  #     /usr/bin/mc mb myminio/${MINIO_BUCKET_NAME};
-  #     /usr/bin/mc anonymous set public myminio/${MINIO_BUCKET_NAME};
-  #     echo 'my content' > myfile.txt;
-  #     /usr/bin/mc cp myfile.txt myminio/${MINIO_BUCKET_NAME};
-  #     exit 0;
-  #     "
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
-  #     interval: 30s
-  #     timeout: 20s
-  #     retries: 3
-
   mongodb:
     container_name: unpubdev_mongodb
-    image: mongo:4.2.19
+    image: mongo:5.0
     ports:
       - "27017:27017"
     restart: always
     volumes:
-      - ~/.unpub_mongo:/data/db
-    #   - mongo_storage:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-    #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      - mongo_storage:/data/db
+      - "./mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_PASSWORD}
+      MONGO_UNPUBDEV_USERNAME: ${MONGO_UNPUBDEV_USERNAME}
+      MONGO_UNPUBDEV_PASSWORD: ${MONGO_UNPUBDEV_PASSWORD}
+      MONGO_DB: ${MONGO_DB}
+    command: [--auth]
   unpubdev:
     container_name: unpudev
     image: printeastwoodcz/unpubdev:1.0.5-dev.3
     restart: always
     volumes:
-      - ~/.unpubdev-packages:/app/unpubdev-packages
+      - unpubdev_storage:/app/unpubdev-packages
     ports:
       - 14000:4000
     links:
@@ -63,9 +30,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      DB_URL: mongodb://mongodb:27017/unpubdev
-      # MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      # MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      DB_URL: mongodb://${MONGO_UNPUBDEV_USERNAME}:${MONGO_UNPUBDEV_PASSWORD}@mongodb:27017
       WAIT_HOSTS: mongodb:27017
 
 volumes:
