@@ -8,7 +8,7 @@ services:
     volumes:
       - unpubdev_storage:/app/${UNPUBDEV_FOLDER}
     ports:
-      - 14000:4000
+      - 4000:4000
     environment:
       UNPUBDEV_MONGO_STRING: ${UNPUBDEV_MONGO_STRING}
       UNPUBDEV_HOST: ${UNPUBDEV_HOST}
