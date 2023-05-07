@@ -19,7 +19,7 @@ services:
     command: [--auth]
   unpubdev:
     container_name: unpudev
-    image: printeastwoodcz/unpubdev:1.0.5-dev.3
+    image: printeastwoodcz/unpubdev:1.0.6
     restart: always
     volumes:
       - unpubdev_storage:/app/${UNPUBDEV_FOLDER}
